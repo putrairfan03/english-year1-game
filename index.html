@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Year 1 English Stars: Vocabulary Game</title>
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --bg: #f0fdf4;
+      --card-bg: #ffffff;
+      --accent: #f59e0b;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --text: #1e293b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Comic Sans MS', 'Chalkboard SE', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(180deg, #dbeafe 0%, #fef3c7 100%);
+      color: var(--text);
+      margin: 0;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .game-card {
+      background: var(--card-bg);
+      border: 4px solid var(--primary);
+      border-radius: 24px;
+      padding: 24px;
+      max-width: 550px;
+      width: 100%;
+      box-shadow: 0 12px 28px rgba(59, 130, 246, 0.25);
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 10px 0;
+      color: #1d4ed8;
+      font-size: 1.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .score-board {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #eff6ff;
+      border: 2px solid #bfdbfe;
+      border-radius: 14px;
+      padding: 10px 18px;
+      margin-bottom: 20px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #1e40af;
+    }
+
+    .question-box {
+      background: #fefce8;
+      border: 3px dashed var(--accent);
+      border-radius: 20px;
+      padding: 24px 16px;
+      margin-bottom: 22px;
+      position: relative;
+    }
+
+    .target-emoji {
+      font-size: 5rem;
+      line-height: 1.1;
+      display: block;
+      margin-bottom: 8px;
+      animation: floatEmoji 2s ease-in-out infinite;
+    }
+
+    @keyframes floatEmoji {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .prompt-text {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #92400e;
+      margin-bottom: 8px;
+    }
+
+    .btn-sound {
+      background: #f59e0b;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 1.4rem;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #b45309;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.1s;
+    }
+
+    .btn-sound:active {
+      transform: translateY(3px);
+      box-shadow: none;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .option-btn {
+      background: #ffffff;
+      border: 3px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 14px 8px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #94a3b8;
+      transition: all 0.15s ease;
+    }
+
+    .option-btn:hover {
+      background: #f8fafc;
+      border-color: #3b82f6;
+    }
+
+    .option-btn:active {
+      transform: translateY(4px);
+      box-shadow: none;
+    }
+
+    .option-btn.correct {
+      background: #dcfce7 !important;
+      border-color: var(--success) !important;
+      color: #15803d !important;
+      box-shadow: 0 4px 0 #166534 !important;
+    }
+
+    .option-btn.wrong {
+      background: #fee2e2 !important;
+      border-color: var(--danger) !important;
+      color: #b91c1c !important;
+      box-shadow: 0 4px 0 #991b1b !important;
+    }
+
+    .feedback-msg {
+      margin-top: 18px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      min-height: 32px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="game-card">
+  <h1>🌟 Year 1 English Stars 🌟</h1>
+  
+  <div class="score-board">
+    <div>Question: <span id="qNum">1</span> / <span id="totalQ">5</span></div>
+    <div>Score: ⭐ <span id="scoreText">0</span></div>
+  </div>
+
+  <div class="question-box">
+    <span class="target-emoji" id="itemEmoji">🐱</span>
+    <div class="prompt-text" id="promptText">What is this?</div>
+    <button class="btn-sound" id="speakBtn" title="Listen again">🔊</button>
+  </div>
+
+  <div class="options-grid" id="optionsContainer">
+    <!-- Butang pilihan jawapan dijana automatik -->
+  </div>
+
+  <div class="feedback-msg" id="feedbackText"></div>
+</div>
+
+<script>
+  // Senarai soalan kosa kata silibus Tahun 1 (Haiwan, Peralatan Sekolah, Makanan & Warna)
+  const questions = [
+    { word: "Cat", emoji: "🐱", options: ["Cat", "Dog", "Pencil", "Bag"] },
+    { word: "Pencil", emoji: "✏️", options: ["Ruler", "Pencil", "Book", "Desk"] },
+    { word: "Elephant", emoji: "🐘", options: ["Duck", "Frog", "Elephant", "Tiger"] },
+    { word: "Bag", emoji: "🎒", options: ["Bag", "Pen", "Eraser", "Chair"] },
+    { word: "Apple", emoji: "🍎", options: ["Banana", "Orange", "Apple", "Carrot"] },
+    { word: "Book", emoji: "📚", options: ["Book", "Ruler", "Pencil", "Cat"] },
+    { word: "Duck", emoji: "🦆", options: ["Dog", "Duck", "Frog", "Bird"] }
+  ];
+
+  let currentIndex = 0;
+  let score = 0;
+  let canAnswer = true;
+
+  const itemEmoji = document.getElementById("itemEmoji");
+  const promptText = document.getElementById("promptText");
+  const optionsContainer = document.getElementById("optionsContainer");
+  const feedbackText = document.getElementById("feedbackText");
+  const qNum = document.getElementById("qNum");
+  const totalQ = document.getElementById("totalQ");
+  const scoreText = document.getElementById("scoreText");
+  const speakBtn = document.getElementById("speakBtn");
+
+  totalQ.textContent = questions.length;
+
+  // Fungsi sebutan audio Bahasa Inggeris automatik
+  function speak(text) {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.85; // Sebutan mesra kanak-kanak
+      window.speechSynthesis.speak(utterance);
+    }
+  }
+
+  function loadQuestion() {
+    canAnswer = true;
+    feedbackText.textContent = "";
+    feedbackText.style.color = "inherit";
+
+    const currentQ = questions[currentIndex];
+    qNum.textContent = currentIndex + 1;
+    itemEmoji.textContent = currentQ.emoji;
+    promptText.textContent = "What is this?";
+
+    optionsContainer.innerHTML = "";
+
+    // Rawakkan susunan butang jawapan
+    const shuffledOptions = [...currentQ.options].sort(() => Math.random() - 0.5);
+
+    shuffledOptions.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.textContent = opt;
+      btn.addEventListener("click", () => checkAnswer(opt, btn));
+      optionsContainer.appendChild(btn);
+    });
+
+    // Sebut arahan atau perkataan
+    speak(currentQ.word);
+  }
+
+  function checkAnswer(selected, buttonEl) {
+    if (!canAnswer) return;
+    canAnswer = false;
+
+    const currentQ = questions[currentIndex];
+    if (selected === currentQ.word) {
+      score += 10;
+      scoreText.textContent = score;
+      buttonEl.classList.add("correct");
+      feedbackText.textContent = "🎉 Excellent! Well done!";
+      feedbackText.style.color = "#16a34a";
+      speak("Great job! " + currentQ.word);
+    } else {
+      buttonEl.classList.add("wrong");
+      feedbackText.textContent = `❌ It is a ${currentQ.word}!`;
+      feedbackText.style.color = "#dc2626";
+      speak("No, it is a " + currentQ.word);
+    }
+
+    setTimeout(() => {
+      currentIndex++;
+      if (currentIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showEndScreen();
+      }
+    }, 1800);
+  }
+
+  function showEndScreen() {
+    optionsContainer.innerHTML = "";
+    itemEmoji.textContent = "🏆";
+    promptText.textContent = "Awesome! You finished the quiz!";
+    feedbackText.textContent = `Final Score: ${score} points!`;
+    feedbackText.style.color = "#1d4ed8";
+    speak("Congratulations! You did a fantastic job!");
+
+    const restartBtn = document.createElement("button");
+    restartBtn.className = "option-btn";
+    restartBtn.style.gridColumn = "span 2";
+    restartBtn.style.background = "#f59e0b";
+    restartBtn.style.color = "#ffffff";
+    restartBtn.style.borderColor = "#d97706";
+    restartBtn.style.boxShadow = "0 4px 0 #b45309";
+    restartBtn.textContent = "Play Again 🔄";
+    restartBtn.onclick = () => {
+      currentIndex = 0;
+      score = 0;
+      scoreText.textContent = 0;
+      loadQuestion();
+    };
+    optionsContainer.appendChild(restartBtn);
+  }
+
+  speakBtn.addEventListener("click", () => {
+    speak(questions[currentIndex].word);
+  });
+
+  // Mulakan soalan pertama
+  loadQuestion();
+</script>
+
+</body>
+</html>
