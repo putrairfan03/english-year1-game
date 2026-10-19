@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Year 1 English Stars: Vocabulary Game</title>
+  <title>Year 1 English Stars: Power-Up Edition</title>
   <style>
     :root {
       --primary: #3b82f6;
-      --bg: #f0fdf4;
+      --bg: #eff6ff;
       --card-bg: #ffffff;
       --accent: #f59e0b;
       --success: #22c55e;
       --danger: #ef4444;
+      --purple: #8b5cf6;
       --text: #1e293b;
     }
 
@@ -19,7 +20,7 @@
 
     body {
       font-family: 'Comic Sans MS', 'Chalkboard SE', system-ui, -apple-system, sans-serif;
-      background: linear-gradient(180deg, #dbeafe 0%, #fef3c7 100%);
+      background: radial-gradient(circle at 50% 20%, #dbeafe 0%, #fef3c7 60%, #bbf7d0 100%);
       color: var(--text);
       margin: 0;
       padding: 16px;
@@ -32,22 +33,24 @@
     .game-card {
       background: var(--card-bg);
       border: 4px solid var(--primary);
-      border-radius: 24px;
-      padding: 24px;
-      max-width: 550px;
+      border-radius: 26px;
+      padding: 22px;
+      max-width: 580px;
       width: 100%;
-      box-shadow: 0 12px 28px rgba(59, 130, 246, 0.25);
+      box-shadow: 0 14px 30px rgba(59, 130, 246, 0.28);
       text-align: center;
+      position: relative;
     }
 
     h1 {
-      margin: 0 0 10px 0;
+      margin: 0 0 8px 0;
       color: #1d4ed8;
-      font-size: 1.8rem;
+      font-size: 1.7rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
+    /* 顶部仪表盘 */
     .score-board {
       display: flex;
       justify-content: space-between;
@@ -55,40 +58,106 @@
       background: #eff6ff;
       border: 2px solid #bfdbfe;
       border-radius: 14px;
-      padding: 10px 18px;
-      margin-bottom: 20px;
+      padding: 8px 16px;
+      margin-bottom: 14px;
       font-weight: bold;
-      font-size: 1.1rem;
+      font-size: 1rem;
       color: #1e40af;
     }
 
+    .streak-badge {
+      background: #fed7aa;
+      color: #c2410c;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+    }
+
+    /* 道具区 Power-Ups */
+    .powerups-section {
+      background: #fdf4ff;
+      border: 2px dashed #f0abfc;
+      border-radius: 16px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .powerup-btn {
+      background: #ffffff;
+      border: 2px solid #d946ef;
+      border-radius: 12px;
+      padding: 6px 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #86198f;
+      transition: all 0.15s ease;
+      box-shadow: 0 3px 0 #c026d3;
+    }
+
+    .powerup-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      background: #fdf2f8;
+    }
+
+    .powerup-btn:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: none;
+    }
+
+    .powerup-btn:disabled {
+      opacity: 0.4;
+      border-color: #cbd5e1;
+      color: #94a3b8;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .powerup-btn.active-buff {
+      background: #fbcfe8;
+      border-color: #db2777;
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+
+    /* 题目展示区 */
     .question-box {
       background: #fefce8;
       border: 3px dashed var(--accent);
       border-radius: 20px;
-      padding: 24px 16px;
-      margin-bottom: 22px;
+      padding: 20px 14px;
+      margin-bottom: 18px;
       position: relative;
     }
 
     .target-emoji {
-      font-size: 5rem;
+      font-size: 4.8rem;
       line-height: 1.1;
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       animation: floatEmoji 2s ease-in-out infinite;
     }
 
     @keyframes floatEmoji {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+      50% { transform: translateY(-7px); }
     }
 
     .prompt-text {
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       font-weight: 800;
       color: #92400e;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .btn-sound {
@@ -96,9 +165,9 @@
       color: white;
       border: none;
       border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      font-size: 1.4rem;
+      width: 44px;
+      height: 44px;
+      font-size: 1.3rem;
       cursor: pointer;
       box-shadow: 0 4px 0 #b45309;
       display: inline-flex;
@@ -112,18 +181,19 @@
       box-shadow: none;
     }
 
+    /* 选项网格 */
     .options-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 12px;
     }
 
     .option-btn {
       background: #ffffff;
       border: 3px solid #cbd5e1;
       border-radius: 16px;
-      padding: 14px 8px;
-      font-size: 1.25rem;
+      padding: 13px 8px;
+      font-size: 1.2rem;
       font-weight: 700;
       color: #334155;
       cursor: pointer;
@@ -131,12 +201,12 @@
       transition: all 0.15s ease;
     }
 
-    .option-btn:hover {
+    .option-btn:hover:not(:disabled) {
       background: #f8fafc;
       border-color: #3b82f6;
     }
 
-    .option-btn:active {
+    .option-btn:active:not(:disabled) {
       transform: translateY(4px);
       box-shadow: none;
     }
@@ -155,22 +225,44 @@
       box-shadow: 0 4px 0 #991b1b !important;
     }
 
+    .option-btn.eliminated {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
     .feedback-msg {
-      margin-top: 18px;
-      font-size: 1.25rem;
+      margin-top: 16px;
+      font-size: 1.2rem;
       font-weight: 800;
-      min-height: 32px;
+      min-height: 30px;
     }
   </style>
 </head>
 <body>
 
 <div class="game-card">
-  <h1>🌟 Year 1 English Stars 🌟</h1>
+  <h1>🌟 Year 1 English Super Stars 🌟</h1>
   
   <div class="score-board">
-    <div>Question: <span id="qNum">1</span> / <span id="totalQ">5</span></div>
+    <div>Question: <span id="qNum">1</span> / <span id="totalQ">50</span></div>
+    <div class="streak-badge" id="streakBadge">Combo: 0 🔥</div>
     <div>Score: ⭐ <span id="scoreText">0</span></div>
+  </div>
+
+  <!-- 道具栏 Power-Ups -->
+  <div class="powerups-section">
+    <button class="powerup-btn" id="btn5050" title="Eliminate 2 wrong answers">
+      <span>⚡ 50/50</span>
+      <small>(<span id="count5050">2</span>)</small>
+    </button>
+    <button class="powerup-btn" id="btnShield" title="Protect against 1 wrong tap">
+      <span>🛡️ Shield</span>
+      <small>(<span id="countShield">2</span>)</small>
+    </button>
+    <button class="powerup-btn" id="btnDouble" title="Double score for this question">
+      <span>✨ 2X Star</span>
+      <small>(<span id="countDouble">2</span>)</small>
+    </button>
   </div>
 
   <div class="question-box">
@@ -180,27 +272,91 @@
   </div>
 
   <div class="options-grid" id="optionsContainer">
-    <!-- Butang pilihan jawapan dijana automatik -->
+    <!-- 动态载入 4 个选项 -->
   </div>
 
   <div class="feedback-msg" id="feedbackText"></div>
 </div>
 
 <script>
-  // Senarai soalan kosa kata silibus Tahun 1 (Haiwan, Peralatan Sekolah, Makanan & Warna)
+  // 一年级标准教学大纲（Super Minds）精选 50 题
   const questions = [
+    // 1-10: 动物 (Animals)
     { word: "Cat", emoji: "🐱", options: ["Cat", "Dog", "Pencil", "Bag"] },
-    { word: "Pencil", emoji: "✏️", options: ["Ruler", "Pencil", "Book", "Desk"] },
+    { word: "Dog", emoji: "🐶", options: ["Dog", "Cat", "Duck", "Frog"] },
     { word: "Elephant", emoji: "🐘", options: ["Duck", "Frog", "Elephant", "Tiger"] },
+    { word: "Duck", emoji: "🦆", options: ["Dog", "Duck", "Frog", "Bird"] },
+    { word: "Frog", emoji: "🐸", options: ["Elephant", "Cat", "Frog", "Fish"] },
+    { word: "Tiger", emoji: "🐯", options: ["Lion", "Tiger", "Rabbit", "Mouse"] },
+    { word: "Bird", emoji: "🐦", options: ["Bird", "Butterfly", "Duck", "Bee"] },
+    { word: "Fish", emoji: "🐟", options: ["Cat", "Dog", "Fish", "Cow"] },
+    { word: "Rabbit", emoji: "🐰", options: ["Horse", "Tiger", "Dog", "Rabbit"] },
+    { word: "Horse", emoji: "🐴", options: ["Cow", "Horse", "Sheep", "Goat"] },
+
+    // 11-20: 学校文具与教室 (At School & Stationery)
+    { word: "Pencil", emoji: "✏️", options: ["Ruler", "Pencil", "Book", "Desk"] },
     { word: "Bag", emoji: "🎒", options: ["Bag", "Pen", "Eraser", "Chair"] },
-    { word: "Apple", emoji: "🍎", options: ["Banana", "Orange", "Apple", "Carrot"] },
     { word: "Book", emoji: "📚", options: ["Book", "Ruler", "Pencil", "Cat"] },
-    { word: "Duck", emoji: "🦆", options: ["Dog", "Duck", "Frog", "Bird"] }
+    { word: "Ruler", emoji: "📏", options: ["Desk", "Pencil", "Ruler", "Pen"] },
+    { word: "Pen", emoji: "🖊️", options: ["Pen", "Pencil", "Eraser", "Scissors"] },
+    { word: "Eraser", emoji: "🧼", options: ["Notebook", "Eraser", "Book", "Bag"] },
+    { word: "Desk", emoji: "🪑", options: ["Desk", "Door", "Window", "Board"] },
+    { word: "Chair", emoji: "🪑", options: ["Chair", "Table", "Bed", "Car"] },
+    { word: "Pencil Case", emoji: "👝", options: ["Bag", "Pencil Case", "Ruler", "Box"] },
+    { word: "Scissors", emoji: "✂️", options: ["Knife", "Scissors", "Ruler", "Paper"] },
+
+    // 21-30: 水果与食物 (Lunchtime / Food & Fruits)
+    { word: "Apple", emoji: "🍎", options: ["Banana", "Orange", "Apple", "Carrot"] },
+    { word: "Banana", emoji: "🍌", options: ["Banana", "Apple", "Pizza", "Cake"] },
+    { word: "Orange", emoji: "🍊", options: ["Orange", "Lemon", "Tomato", "Pear"] },
+    { word: "Watermelon", emoji: "🍉", options: ["Grape", "Watermelon", "Apple", "Strawberry"] },
+    { word: "Carrot", emoji: "🥕", options: ["Potato", "Carrot", "Egg", "Milk"] },
+    { word: "Cake", emoji: "🎂", options: ["Bread", "Cake", "Pizza", "Sandwich"] },
+    { word: "Pizza", emoji: "🍕", options: ["Burger", "Pizza", "Hotdog", "Egg"] },
+    { word: "Milk", emoji: "🥛", options: ["Juice", "Water", "Milk", "Tea"] },
+    { word: "Egg", emoji: "🥚", options: ["Egg", "Cheese", "Rice", "Meat"] },
+    { word: "Ice Cream", emoji: "🍦", options: ["Ice Cream", "Cake", "Juice", "Candy"] },
+
+    // 31-40: 玩具与交通工具 (Toys & Vehicles)
+    { word: "Ball", emoji: "⚽", options: ["Ball", "Kite", "Doll", "Plane"] },
+    { word: "Car", emoji: "🚗", options: ["Train", "Car", "Bike", "Boat"] },
+    { word: "Kite", emoji: "🪁", options: ["Plane", "Bird", "Kite", "Monster"] },
+    { word: "Train", emoji: "🚆", options: ["Bus", "Train", "Car", "Truck"] },
+    { word: "Bike", emoji: "🚲", options: ["Bike", "Scooter", "Skateboard", "Boat"] },
+    { word: "Plane", emoji: "✈️", options: ["Helicopter", "Plane", "Rocket", "Bird"] },
+    { word: "Doll", emoji: "🪆", options: ["Monster", "Doll", "Robot", "Ball"] },
+    { word: "Monster", emoji: "👾", options: ["Robot", "Ghost", "Monster", "Alien"] },
+    { word: "Boat", emoji: "⛵", options: ["Ship", "Boat", "Car", "Bus"] },
+    { word: "Bus", emoji: "🚌", options: ["Truck", "Bus", "Taxi", "Train"] },
+
+    // 41-50: 身体部位、自然与家庭 (Body, Nature & People)
+    { word: "Eye", emoji: "👁️", options: ["Nose", "Ear", "Eye", "Mouth"] },
+    { word: "Ear", emoji: "👂", options: ["Ear", "Hand", "Foot", "Arm"] },
+    { word: "Nose", emoji: "👃", options: ["Eye", "Nose", "Mouth", "Head"] },
+    { word: "Mouth", emoji: "👄", options: ["Teeth", "Mouth", "Face", "Chin"] },
+    { word: "Hand", emoji: "✋", options: ["Foot", "Leg", "Hand", "Arm"] },
+    { word: "Sun", emoji: "☀️", options: ["Moon", "Star", "Sun", "Cloud"] },
+    { word: "Tree", emoji: "🌳", options: ["Flower", "Tree", "Grass", "Leaf"] },
+    { word: "Boy", emoji: "👦", options: ["Girl", "Boy", "Teacher", "Baby"] },
+    { word: "Girl", emoji: "👧", options: ["Boy", "Girl", "Mother", "Sister"] },
+    { word: "House", emoji: "🏠", options: ["School", "Shop", "House", "Park"] }
   ];
 
   let currentIndex = 0;
   let score = 0;
+  let streak = 0;
   let canAnswer = true;
+
+  // 道具库存与状态
+  let powerups = {
+    fifty: 2,
+    shield: 2,
+    double: 2
+  };
+  let activeBuffs = {
+    shield: false,
+    double: false
+  };
 
   const itemEmoji = document.getElementById("itemEmoji");
   const promptText = document.getElementById("promptText");
@@ -209,25 +365,49 @@
   const qNum = document.getElementById("qNum");
   const totalQ = document.getElementById("totalQ");
   const scoreText = document.getElementById("scoreText");
+  const streakBadge = document.getElementById("streakBadge");
   const speakBtn = document.getElementById("speakBtn");
+
+  const btn5050 = document.getElementById("btn5050");
+  const btnShield = document.getElementById("btnShield");
+  const btnDouble = document.getElementById("btnDouble");
+  const count5050 = document.getElementById("count5050");
+  const countShield = document.getElementById("countShield");
+  const countDouble = document.getElementById("countDouble");
 
   totalQ.textContent = questions.length;
 
-  // Fungsi sebutan audio Bahasa Inggeris automatik
   function speak(text) {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'en-US';
-      utterance.rate = 0.85; // Sebutan mesra kanak-kanak
+      utterance.rate = 0.85;
       window.speechSynthesis.speak(utterance);
     }
+  }
+
+  function updatePowerUpUI() {
+    count5050.textContent = powerups.fifty;
+    countShield.textContent = powerups.shield;
+    countDouble.textContent = powerups.double;
+
+    btn5050.disabled = (powerups.fifty <= 0 || !canAnswer);
+    btnShield.disabled = (powerups.shield <= 0 || !canAnswer || activeBuffs.shield);
+    btnDouble.disabled = (powerups.double <= 0 || !canAnswer || activeBuffs.double);
+
+    btnShield.classList.toggle("active-buff", activeBuffs.shield);
+    btnDouble.classList.toggle("active-buff", activeBuffs.double);
   }
 
   function loadQuestion() {
     canAnswer = true;
     feedbackText.textContent = "";
     feedbackText.style.color = "inherit";
+
+    // 重置单题 Buff
+    activeBuffs.shield = false;
+    activeBuffs.double = false;
 
     const currentQ = questions[currentIndex];
     qNum.textContent = currentIndex + 1;
@@ -236,57 +416,140 @@
 
     optionsContainer.innerHTML = "";
 
-    // Rawakkan susunan butang jawapan
     const shuffledOptions = [...currentQ.options].sort(() => Math.random() - 0.5);
 
     shuffledOptions.forEach(opt => {
       const btn = document.createElement("button");
       btn.className = "option-btn";
       btn.textContent = opt;
+      btn.dataset.word = opt;
       btn.addEventListener("click", () => checkAnswer(opt, btn));
       optionsContainer.appendChild(btn);
     });
 
-    // Sebut arahan atau perkataan
+    updatePowerUpUI();
     speak(currentQ.word);
   }
 
   function checkAnswer(selected, buttonEl) {
     if (!canAnswer) return;
-    canAnswer = false;
 
     const currentQ = questions[currentIndex];
+
+    // 答对
     if (selected === currentQ.word) {
-      score += 10;
+      canAnswer = false;
+      const points = activeBuffs.double ? 20 : 10;
+      score += points;
+      streak++;
       scoreText.textContent = score;
+      streakBadge.textContent = `Combo: ${streak} 🔥`;
+
       buttonEl.classList.add("correct");
-      feedbackText.textContent = "🎉 Excellent! Well done!";
+      feedbackText.textContent = activeBuffs.double ? `🌟 DOUBLE STARS! +${points} pts!` : "🎉 Excellent! Well done!";
       feedbackText.style.color = "#16a34a";
       speak("Great job! " + currentQ.word);
+
+      // 每连续答对 5 题，免费赠送随机道具
+      if (streak > 0 && streak % 5 === 0) {
+        powerups.fifty++;
+        powerups.shield++;
+        feedbackText.textContent += " 🎁 Power-Up Bonus!";
+      }
+
+      setTimeout(() => {
+        currentIndex++;
+        if (currentIndex < questions.length) {
+          loadQuestion();
+        } else {
+          showEndScreen();
+        }
+      }, 1600);
+
     } else {
+      // 答错处理
       buttonEl.classList.add("wrong");
+
+      // 如果有 Shield 保护罩
+      if (activeBuffs.shield) {
+        activeBuffs.shield = false;
+        updatePowerUpUI();
+        feedbackText.textContent = "🛡️ Shield Saved You! Try one more time!";
+        feedbackText.style.color = "#8b5cf6";
+        speak("Shield activated! Try again!");
+        buttonEl.disabled = true; // 仅禁用该错误选项，允许重新选
+        return;
+      }
+
+      // 无保护罩，正常扣连胜并进入下一题
+      canAnswer = false;
+      streak = 0;
+      streakBadge.textContent = "Combo: 0 🔥";
       feedbackText.textContent = `❌ It is a ${currentQ.word}!`;
       feedbackText.style.color = "#dc2626";
       speak("No, it is a " + currentQ.word);
+
+      setTimeout(() => {
+        currentIndex++;
+        if (currentIndex < questions.length) {
+          loadQuestion();
+        } else {
+          showEndScreen();
+        }
+      }, 1800);
+    }
+  }
+
+  // 道具 1: 50/50 排除两个错误答案
+  btn5050.addEventListener("click", () => {
+    if (powerups.fifty <= 0 || !canAnswer) return;
+    powerups.fifty--;
+
+    const currentQ = questions[currentIndex];
+    const buttons = Array.from(optionsContainer.querySelectorAll(".option-btn"));
+    const wrongButtons = buttons.filter(b => b.dataset.word !== currentQ.word);
+
+    // 随机剔除其中两个
+    const shuffledWrong = wrongButtons.sort(() => Math.random() - 0.5);
+    if (shuffledWrong.length >= 2) {
+      shuffledWrong[0].classList.add("eliminated");
+      shuffledWrong[1].classList.add("eliminated");
     }
 
-    setTimeout(() => {
-      currentIndex++;
-      if (currentIndex < questions.length) {
-        loadQuestion();
-      } else {
-        showEndScreen();
-      }
-    }, 1800);
-  }
+    feedbackText.textContent = "⚡ 50/50 Activated!";
+    feedbackText.style.color = "#c026d3";
+    updatePowerUpUI();
+  });
+
+  // 道具 2: 护盾 Shield
+  btnShield.addEventListener("click", () => {
+    if (powerups.shield <= 0 || !canAnswer || activeBuffs.shield) return;
+    powerups.shield--;
+    activeBuffs.shield = true;
+    feedbackText.textContent = "🛡️ Shield Activated! Next mistake is protected!";
+    feedbackText.style.color = "#8b5cf6";
+    updatePowerUpUI();
+  });
+
+  // 道具 3: 双倍得分 2X Star
+  btnDouble.addEventListener("click", () => {
+    if (powerups.double <= 0 || !canAnswer || activeBuffs.double) return;
+    powerups.double--;
+    activeBuffs.double = true;
+    feedbackText.textContent = "✨ 2X Star Activated! Get 20 points!";
+    feedbackText.style.color = "#d97706";
+    updatePowerUpUI();
+  });
 
   function showEndScreen() {
     optionsContainer.innerHTML = "";
     itemEmoji.textContent = "🏆";
-    promptText.textContent = "Awesome! You finished the quiz!";
+    promptText.textContent = "Super Fantastic! 50 Questions Completed!";
     feedbackText.textContent = `Final Score: ${score} points!`;
     feedbackText.style.color = "#1d4ed8";
-    speak("Congratulations! You did a fantastic job!");
+    speak("Congratulations! You are an English Super Star!");
+
+    document.querySelector(".powerups-section").style.display = "none";
 
     const restartBtn = document.createElement("button");
     restartBtn.className = "option-btn";
@@ -295,11 +558,15 @@
     restartBtn.style.color = "#ffffff";
     restartBtn.style.borderColor = "#d97706";
     restartBtn.style.boxShadow = "0 4px 0 #b45309";
-    restartBtn.textContent = "Play Again 🔄";
+    restartBtn.textContent = "Play Again (Reset All) 🔄";
     restartBtn.onclick = () => {
       currentIndex = 0;
       score = 0;
+      streak = 0;
+      powerups = { fifty: 2, shield: 2, double: 2 };
       scoreText.textContent = 0;
+      streakBadge.textContent = "Combo: 0 🔥";
+      document.querySelector(".powerups-section").style.display = "flex";
       loadQuestion();
     };
     optionsContainer.appendChild(restartBtn);
@@ -309,7 +576,7 @@
     speak(questions[currentIndex].word);
   });
 
-  // Mulakan soalan pertama
+  // 启动游戏
   loadQuestion();
 </script>
 
